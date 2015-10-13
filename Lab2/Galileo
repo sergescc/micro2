@@ -1,0 +1,155 @@
+/*
+ * File:   PIC and Galileo communication          
+ *         
+ * 
+ * simple Galileo program example
+ * for UMass Lowell 16.480/552
+ * 
+ * Author: Roy
+ *
+ * Created on 2014/9/13
+ */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+#define Strobe     (26) // IO8
+#define GP_4       (28) // IO4
+#define GP_5	   (17) // IO5
+#define GP_6	   (24) // IO6
+#define GP_7	   (27) // IO7
+#define GPIO_DIRECTION_IN      (1)  
+#define GPIO_DIRECTION_OUT     (0)
+#define ERROR                  (-1)
+
+//open GPIO and set the direction
+int openGPIO(int gpio, int direction )
+{
+        1.set the GPIO
+        2.set the direction          
+        3.set the voltage
+		
+		char buffer[256];
+        int fileHandle;
+        int fileMode;
+
+  //Export GPIO
+        fileHandle = open("/sys/class/gpio/export", O_WRONLY);
+        if(ERROR == fileHandle)
+        {
+               puts("Error: Unable to opening /sys/class/gpio/export");
+               return(-1);
+        }
+        sprintf(buffer, "%d", gpio);
+        write(fileHandle, buffer, strlen(buffer));
+        close(fileHandle);
+
+   //Direction GPIO
+        sprintf(buffer, "/sys/class/gpio/gpio%d/direction", gpio);
+        fileHandle = open(buffer, O_WRONLY);
+        if(ERROR == fileHandle)
+        {
+               puts("Unable to open file:");
+               puts(buffer);
+               return(-1);
+        }
+
+        if (direction == GPIO_DIRECTION_OUT)
+        {
+               // Set out direction
+               write(fileHandle, "out", 3);
+               fileMode = O_WRONLY;
+        }
+        else
+        {
+               // Set in direction
+               write(fileHandle, "in", 2);
+               fileMode = O_RDONLY;
+        }
+        close(fileHandle);
+
+
+   //Open GPIO for Read / Write
+        sprintf(buffer, "/sys/class/gpio/gpio%d/value", gpio);
+        fileHandle = open(buffer, fileMode);
+        if(ERROR == fileHandle)
+        {
+               puts("Unable to open file:");
+               puts(buffer);
+               return(-1);
+        }
+
+        return(fileHandle);  //This file handle will be used in read/write and close operations.
+}
+
+//write value
+int writeGPIO(int fHandle, int val)
+{
+    if(val == 0)
+	{
+		write(fhandle, "0", 1);
+	}
+	else
+	{
+		write(fhandle, "1", 1);
+	}
+	
+	return(0);
+}
+
+//Read from the GPIO
+int readGPIO(int fileHandle, int gpio)
+{
+	int value;
+    //Reopening the file again in read mode, since data was not refreshing.
+    fileHandle = openFileForReading(gpio);
+    read(fileHandle, &value, 1);
+		
+    if('0' == value)
+    {
+        // Current GPIO status low
+        value = 0;
+    }
+    else
+    {
+        // Current GPIO status high
+        value = 1;
+    }
+    close(fileHandle);
+    return value;
+
+}
+
+//main
+int main(void)
+{
+ 	  int fileHandleGPIO_4;
+        int fileHandleGPIO_5;
+        int fileHandleGPIO_6;
+        int fileHandleGPIO_7;
+	  int fileHandleGPIO_S; 
+        fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_OUT);
+        fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
+        fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
+        fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
+	  fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
+       
+        while(1)
+        {
+               1.Strobe high
+               2.write data
+               3.Strobe low
+	         4.Strobe high
+			 
+			 writeGPIO(fileHandleGPIO_S, 0);
+			 writeGPIO(fileHandleGPIO_S, 1);
+			 readGPIO(fileHandleGPIO_4, GP_4);
+			 readGPIO(fileHandleGPIO_5, GP_5);
+			 readGPIO(fileHandleGPIO_6, GP_6);
+			 readGPIO(fileHandleGPIO_7, GP_7);
+			 writeGPIO(fileHandleGPIO_S, 0);
+        }
+}
