@@ -48,27 +48,34 @@ typedef struct
 
 void set_receive()
 {
-    TRISAbits.TRISA2 = 1;
     TRISC = 0b00111110;
+    return;
 }
 
 void adc_init ()
 {
     ANSEL   = 0b00100000;
     ADCON0  = 0b10010101;
+    ADCON1  = 0b00011000;
     INTCON  = 0b11000000;
     PIE1    = 0b01000000;
+    GO = 1;
+    return;
+
     
 }
 
 void set_send()
 {
     TRISC = 0b00000010;
+    return;
 }
 
 void set_strobe_input()
 {
-    TRISAbits.TRISA2 = 1;
+    TRISA = 0b00000100;
+    set_receive();
+    return;
 }
 
 message receive_msg()
@@ -94,37 +101,22 @@ void send_message( message msg)
     //wait for galileo to stop reading 
     while(RA2);
     set_receive();
+    return;
 }
 
-
-void interrupt isr(void)
-{
-    if (ADIF)
-    {
-        ADIF = 0;
-        
-        unsigned char darkness;
-        darkness = ADRESH;
-        if (darkness > 2 )
-        {
-            RC0 = 1;
-        }
-        else if (always_on != 0xFF)
-        {
-            RC0 = 0;
-        }
-        GO =1;
-    }
-}
 
 // Main program
-void main (void)
+int main (void)
 {
 
     message msg;
     set_strobe_input;
     adc_init;
-    
+    GO = 1;
+    PORTCbits.RC0 = 1;
+    PORTCbits_t.RC0 =0;
+    PORTCbits_t.RC2 = 1;
+
     while(1)
     {
         msg=receive_msg();
@@ -162,6 +154,27 @@ void main (void)
         }
     }
 
+    return 0;
 }
 
 
+void interrupt ISR(void)
+{
+    if (ADIF)
+    {
+        unsigned char darkness;
+
+        ADIF = 0;
+        
+        darkness = ADRESH;
+        if (darkness > 2 )
+        {
+            RC0 = 1;
+        }
+        else if (always_on != 0xFF)
+        {
+            RC0 = 0;
+        }
+        GO =1;
+    }
+}
