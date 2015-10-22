@@ -54,7 +54,9 @@
 #define false 0
 
 bool always_on;
+bool adc_on;
 unsigned int voltage;
+
 
 enum messages {
     MSG_RESET   = 0x0,
@@ -62,7 +64,9 @@ enum messages {
     MSG_GET     = 0x2,
     MSG_ACK     = 0xE,
     MSG_NOTHING = 0xF,
-    MSG_LIGHTLED = 0xD
+    MSG_LIGHTLED = 0xD,
+    MSG_TOGGLEADC = 0x3,
+    MSG_OFF = 0xC
 };
 
 typedef struct
@@ -209,6 +213,7 @@ int main (void)
     set_strobe_input();
     adc_init();
     always_on = false;
+    adc_on = true;
     while(true)
     {
       
@@ -224,29 +229,44 @@ int main (void)
                 msg.data = voltage;
                 send_message(msg);
                 msg.data = MSG_ACK;
-                send_message(msg);
                 break;
             case MSG_LIGHTLED :
                 if (always_on)
                 {
                     always_on = false;
+                    msg.data = MSG_OFF;
                 }
                 else
                 {
                     always_on = true;
+                    msg.data = MSG_ACK;
                 }
                 break;
             case MSG_RESET :
+                ADRESH = 0;
+                ADRESL = 0;
+                msg.data = MSG_ACK;
                 break;
             case MSG_PING :
+                msg.data = MSG_ACK;
+                break;
+            case MSG_TOGGLEADC :
+                if (adc_on)
+                {
+                    adc_on = false;
+                    msg.data = MSG_OFF;
+                }
+                else
+                {
+                    adc_on = true;
+                    msg.data = MSG_ACK;
+                }
                 break;
                 
-
+                
         }
-        
-        msg.data = MSG_ACK;
         send_message(msg);
-        interrupt_on();
+        if (adc_on == true) interrupt_on();
     }
 
     return (EXIT_SUCCESS);
