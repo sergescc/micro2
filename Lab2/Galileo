@@ -123,33 +123,123 @@ int readGPIO(int fileHandle, int gpio)
 
 }
 
+typedef struct{
+	
+	typedef struct {
+	unsigned char bit1 :1;
+	unsigned char bit2 :1;
+	unsigned char bit3 :1;
+	unsigned char bit4 :1;
+	} data:
+} message:
+
 //main
 int main(void)
 {
  	  int fileHandleGPIO_4;
-        int fileHandleGPIO_5;
-        int fileHandleGPIO_6;
-        int fileHandleGPIO_7;
-	  int fileHandleGPIO_S; 
-        fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_OUT);
-        fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
-        fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
-        fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
-	  fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
+	int fileHandleGPIO_5;
+	int fileHandleGPIO_6;
+	int fileHandleGPIO_7;
+	int fileHandleGPIO_S;
+	
+	int adcVal = 0;
+	message temp;
+	message recMsg;
+	
+	fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_OUT);
+	fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
+	fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
+	fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
+	fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
        
         while(1)
         {
-               1.Strobe high
-               2.write data
-               3.Strobe low
-	         4.Strobe high
-			 
-			 writeGPIO(fileHandleGPIO_S, 0);
-			 writeGPIO(fileHandleGPIO_S, 1);
-			 readGPIO(fileHandleGPIO_4, GP_4);
-			 readGPIO(fileHandleGPIO_5, GP_5);
-			 readGPIO(fileHandleGPIO_6, GP_6);
-			 readGPIO(fileHandleGPIO_7, GP_7);
-			 writeGPIO(fileHandleGPIO_S, 0);
-        }
+			char cmd;
+			printf("Command (G,P,R):");
+			scanf("%c", &cmd);
+			if (cmd == "G")
+			{
+				writeGPIO(fileHandleGPIO_S, 0);
+				//write command
+				writeGPIO(fileHandleGPIO_4, 0);
+				writeGPIO(fileHandleGPIO_5, 1);
+				writeGPIO(fileHandleGPIO_6, 0);
+				writeGPIO(fileHandleGPIO_7, 0);
+			
+				writeGPIO(fileHandleGPIO_S, 1);
+				//wait for pic to read
+				usleep(1000*10);
+				//end write operation
+				writeGPIO(fileHandleGPIO_S, 0);
+				//
+				for(int i = 0; i < 3; i++)
+				{
+					writeGPIO(fileHandleGPIO_S, 1);
+				
+					//Read first nibble set
+					temp = readGPIO(fileHandleGPIO_7, GP_7);
+					recMsg.data.bit4 = temp.data.bit1;
+					temp = readGPIO(fileHandleGPIO_6, GP_6);
+					recMsg.data.bit3 = temp.data.bit1;
+					temp = readGPIO(fileHandleGPIO_5, GP_5);
+					recMsg.data.bit2 = temp.data.bit1;
+					temp = readGPIO(fileHandleGPIO_4, GP_4);
+					recMsg.data.bit1 = temp.data.bit1;
+				
+					// put nibble into adcVal
+					adcVal << recMsg.data;
+					usleep(1000*10);
+					writeGPIO(fileHandleGPIO_S, 0);
+				}
+			
+    		}
+			else if(cmd == "P")
+			{
+				bool msgack = false;
+				writeGPIO(fileHandleGPIO_S, 0);
+				//write command
+				writeGPIO(fileHandleGPIO_4, 1);
+				writeGPIO(fileHandleGPIO_5, 0);
+				writeGPIO(fileHandleGPIO_6, 0);
+				writeGPIO(fileHandleGPIO_7, 0);
+			
+				writeGPIO(fileHandleGPIO_S, 1);
+				//wait for pic to read
+				usleep(1000*10);
+				//end write operation
+				writeGPIO(fileHandleGPIO_S, 0);
+				
+				writeGPIO(fileHandleGPIO_S, 1);
+				temp = readGPIO(fileHandleGPIO_4, GP_4);
+				if (temp.data.bit1 == "0")
+					msgack = true;
+				printf("Message Acknowledged\n");
+			}
+			else if(cmd == "R")
+			{
+				bool msgack = false;
+				writeGPIO(fileHandleGPIO_S, 0);
+				//write command
+				writeGPIO(fileHandleGPIO_4, 1);
+				writeGPIO(fileHandleGPIO_5, 0);
+				writeGPIO(fileHandleGPIO_6, 0);
+				writeGPIO(fileHandleGPIO_7, 0);
+			
+				writeGPIO(fileHandleGPIO_S, 1);
+				//wait for pic to read
+				usleep(1000*10);
+				//end write operation
+				writeGPIO(fileHandleGPIO_S, 0);
+				
+				writeGPIO(fileHandleGPIO_S, 1);
+				temp = readGPIO(fileHandleGPIO_4, GP_4);
+				if (temp.data.bit1 == "0")
+					msgack = true;
+				printf("PIC Reset\n");
+			}
+			else
+			{
+				printf("Invalid Command");
+			}
+		}
 }
