@@ -241,12 +241,12 @@ int main (void)
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_OUT, DATA_PATH_SIZE);
 				messageIO(&msg, GPIO_DIRECTION_OUT, dataPath, DATA_PATH_SIZE);
 				printf("\033[s\033[11;0H\033[K\033[10;2H Status: Sending Command");
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,1);
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,0);
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_IN, DATA_PATH_SIZE);
-				usleep(1000*100);
+				usleep(1000*1000);
 				writeGPIO(strobeHandle,1);
 				printf("\033[11;0H\033[K\033[4B Status: Reading Message");
 				messageIO(&msg, GPIO_DIRECTION_IN, fileHandles, DATA_PATH_SIZE);
@@ -264,18 +264,19 @@ int main (void)
 			}
 			case 'P' :
 			{
+				writeGPIO(strobeHandle, 0);
 				msg.data = 0x1;
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_OUT, DATA_PATH_SIZE);
 				messageIO(&msg, GPIO_DIRECTION_OUT, dataPath, DATA_PATH_SIZE);
 				printf("\033[s\033[11;0H\033[K\033[10;2H Status: Sending Command");
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,1);
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,0);
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_IN, DATA_PATH_SIZE);
-				usleep(1000*100);
+				usleep(1000*1000);
 				writeGPIO(strobeHandle,1);
-				printf("\033[11;0H\033[2\033[4B Status: Reading Message");
+				printf("\033[11;0H\033[K\033[4B Status: Reading Message");
 				messageIO(&msg, GPIO_DIRECTION_IN, fileHandles, DATA_PATH_SIZE);
 				printf("\033[12;0H\033[K\033[4B Message: 0x%X ",  msg.data);
 				if (msg.data == 0xE)
@@ -286,16 +287,17 @@ int main (void)
 			}
 			case 'R' :
 			{
+				writeGPIO(strobeHandle, 0);
 				msg.data = 0x0;
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_OUT, DATA_PATH_SIZE);
 				messageIO(&msg, GPIO_DIRECTION_OUT, dataPath, DATA_PATH_SIZE);
 				printf("\033[s\033[11;0H\033[K\033[10;2H Status: Sending Command");
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,1);
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,0);
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_IN, DATA_PATH_SIZE);
-				usleep(1000*100);
+				usleep(1000*1000);
 				writeGPIO(strobeHandle,1);
 				printf("\033[11;0H\033[K\033[4B Status: Reading Message");
 				messageIO(&msg, GPIO_DIRECTION_IN, fileHandles, DATA_PATH_SIZE);
@@ -307,31 +309,31 @@ int main (void)
 				break;
 			}
 			case 'G' :
-			{
+			{	writeGPIO(strobeHandle, 0);
 				adcValue = 0;
 				voltage = 0;
 				msg.data = 0x2;
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_OUT, DATA_PATH_SIZE);
 				messageIO(&msg, GPIO_DIRECTION_OUT, dataPath, DATA_PATH_SIZE);
 				printf("\033[s\033[11;0H\033[K\033[10;2H Status: Sending Command");
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,1);
-				usleep(1000 *100);
-				for (i = 0; i < 3; i++)
+				usleep(1000 *1000);
+				for (i = 2; i >= 0; i--)
 				{
 					writeGPIO(strobeHandle,0);
 					fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_IN, DATA_PATH_SIZE);
-					usleep(1000*100);
+					usleep(1000*1000);
 					writeGPIO(strobeHandle,1);
 					printf("\033[11;0H\033[K\033[4B Status: Reading Message");
 					messageIO(&msg, GPIO_DIRECTION_IN, fileHandles, DATA_PATH_SIZE);
 					printf("\033[12;0H\033[K\033[4B Message: 0x%X ",  msg.data);
 					adcValue |= msg.data << (i * DATA_PATH_SIZE);
-					usleep(1000*100);
+					usleep(1000*1000);
 				}
 				writeGPIO(strobeHandle,0);
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_IN, DATA_PATH_SIZE);
-				usleep(1000*100);
+				usleep(1000*1000);
 				writeGPIO(strobeHandle,1);
 				printf("\033[11;0H\033[K\033[4B Status: Reading Message");
 				messageIO(&msg, GPIO_DIRECTION_IN, fileHandles, DATA_PATH_SIZE);
@@ -340,25 +342,25 @@ int main (void)
 				{
 					printf("\033[11;0H\033[K\033[4B Status: ADC Read Succesful\033[u");
 				}
-				printf("\033[14;0HADC Value: %X", adcValue);
+				printf("\033[15;0H\033[KADC Value: %X", adcValue);
 				adcValue &= 0x3FF;
-				voltage = (float) ((adcValue/1024) * 5.0); 
+				voltage = (float) ((adcValue/1024.0) * 5.0); 
 				printf("\033[12;0H\033[K\033[4B Voltage: %lf \033[u", voltage);
 				break;
 
 			}
 			case 'T' :
-			{
+			{	writeGPIO(strobeHandle, 0);
 				msg.data = 0x3;
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_OUT, DATA_PATH_SIZE);
 				messageIO(&msg, GPIO_DIRECTION_OUT, dataPath, DATA_PATH_SIZE);
 				printf("\033[s\033[11;0H\033[K\033[10;2H Status: Sending Command");
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,1);
-				usleep(1000 *100);
+				usleep(1000 *1000);
 				writeGPIO(strobeHandle,0);
 				fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_IN, DATA_PATH_SIZE);
-				usleep(1000*100);
+				usleep(1000*1000);
 				writeGPIO(strobeHandle,1);
 				printf("\033[11;0H\033[K\033[4B Status: Reading Message");
 				messageIO(&msg, GPIO_DIRECTION_IN, fileHandles, DATA_PATH_SIZE);
