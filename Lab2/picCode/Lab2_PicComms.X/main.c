@@ -48,10 +48,12 @@
 
 
 
-
+#define state int
 #define bool int
 #define true 1
 #define false 0
+#define high 1
+#define low 0
 
 bool always_on;
 bool adc_on;
@@ -135,32 +137,35 @@ void interrupt_off()
     return;
 }
 
+void waitWhileStrobeStateIs(state waitState)
+{
+    int i;
+    while (RA2 == waitState) continue;
+    for (i = 0; i < 1000; i++);
+    while (RA2 == waitState) continue;
+}
+
 message receive_msg()
 {
     message msg;
     msg.data = 0x0;
-    while(!RA2) continue;
-    while(RA2) continue;
-    interrupt_off();
+    waitWhileStrobeStateIs(high);
     set_receive();
-    while(!RA2) continue;
+    waitWhileStrobeStateIs(low);
     msg.data |= PORTC >> 2;
-    while(RA2) continue ;
     return msg;
 }
 
 void send_message( message msg)
 {
-    while(RA2) continue;
+    waitWhileStrobeStateIs(high);
     //load message value
     set_send();
     PORTC &= 0b11000011;
     PORTC |= msg.data << 2;
     //wait for galileo to start reading
-    while(!RA2) continue;
-    //wait for galileo to read message 
-    
-    
+    waitWhileStrobeStateIs(low);
+    //wait for galileo to read message
     return;
 }
 
@@ -216,13 +221,15 @@ int main (void)
     adc_on = true;
     while(true)
     {
-      
+        msg.data = 0;
+        waitWhileStrobeStateIs(low);
         msg = receive_msg();
+        interrupt_off();
         switch(msg.data)
         {            
             case MSG_GET :
                 msg.data = voltage >> 8;
-                msg.data &= 0x2;
+                msg.data &= 0x3;
                 send_message(msg);
                 msg.data = voltage >> 4;
                 send_message(msg);
@@ -238,11 +245,14 @@ int main (void)
                 }
                 else
                 {
+                    RC0 =1;
                     always_on = true;
                     msg.data = MSG_ACK;
                 }
                 break;
             case MSG_RESET :
+                voltage = 0;
+                
                 ADRESH = 0;
                 ADRESL = 0;
                 msg.data = MSG_ACK;
@@ -271,5 +281,3 @@ int main (void)
 
     return (EXIT_SUCCESS);
 }
-
-
