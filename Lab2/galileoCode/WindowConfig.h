@@ -12,8 +12,8 @@
 #define GRAPH_START_X (4)
 #define GRAPH_START_Y (4)
 
-#define GRAPH_END_X (40)
-#define GRAPH_END_Y	(19)
+#define GRAPH_END_X (50)
+#define GRAPH_END_Y	(29)
 
 #define REF_V (5)
 

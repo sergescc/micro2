@@ -91,7 +91,7 @@ float getVoltage(int dataPath[])
 		return (-1);
 	}
 
-	gotoXY(35, 21);
+	gotoXY((GRAPH_END_X - 20),(GRAPH_END_Y + 2) );
 	printf("Voltage: %f", voltage);
 
 	return (voltage);
@@ -115,7 +115,7 @@ void * graphVoltage(void * dataPath)
 
 	clearPAGE();
 
-	gotoXY(9,1);
+	gotoXY(10,1);
 	printf("Segement SIze = %f", segmentSize);
 
 	for (i = GRAPH_START_Y ; i <= GRAPH_END_Y; i++)
@@ -407,7 +407,7 @@ int main (void)
 
 
 				getchar();
-				clearInputBuffer();
+
 
 				pthread_mutex_lock (&cGmutex);
 				continueGraphing = false;
