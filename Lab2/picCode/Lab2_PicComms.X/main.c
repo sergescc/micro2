@@ -180,7 +180,7 @@ void interrupt isr(void)
 
         voltage = (ADRESH<<8) + ADRESL;
         
-        if (voltage > 400  )
+        if (voltage > 520  )
         {
             RC0 = 1;
         }
