@@ -1,8 +1,20 @@
+/** CursorCntl.c
+
+	Created: 10/26/2015
+
+	Created BY: Sergio Coronado
+
+	Purpose: Defines function Function definitions
+	 for terminal manipulation
+*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "CursorCntl.h"
+
+
+//Set Color
 
 void setColor(Colors color)
 {
@@ -55,15 +67,21 @@ void setColor(Colors color)
 	}
 }
 
+//goto coordintates x,y
+
 void gotoXY(int X, int Y)
 {
 	printf("\033[%d;%dH", Y, X);
 }
 
+//saves the current position of the cursor
+
 void saveCursor()
 {
 	printf ("\033[s");
 }
+
+// clears from the current position to the end of the line
 
 void clearEOL()
 
@@ -71,19 +89,28 @@ void clearEOL()
 	printf ("\033[K");
 }
 
+//clears the entire page
+
 void clearPAGE()
 {
 	printf ("\033[2J");
 }
 
+//recalls cursor to last saved position
+
 void recallCursor()
 {
 	printf ("\033[u");
 }
+
+// clears below a specified line
+
 void clearBelowLine(int line)
 {
 	printf ("\033[J");
 }
+
+//clears the entire line specified
 
 void clearLine(int line)
 {

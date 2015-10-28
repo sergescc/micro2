@@ -1,3 +1,12 @@
+/** WINDOW_CONFIG.h
+
+	Created: 10/26/2015
+
+	Created BY: Sergio Coronado
+
+	Purpose: Configuration parameters to use thorugh out the program
+
+*/
 #ifndef WINDOW_CONFIG
 #define WINDOW_CONFIG
 

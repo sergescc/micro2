@@ -1,3 +1,14 @@
+/** CursorCntl.c
+
+	Created: 10/26/2015
+
+	Created BY: Ian Copithorne,
+	Edited By; Sergio Coronado and Joseph Braught
+
+	Purpose: function definitions for sending and receiving messages
+
+*/
+
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -9,7 +20,16 @@
 #include "GalileoGPIO.h"
 #include "GalileoComms.h"
 
+/* Function: Send Message
 
+	Purpose: Sets STROBE and IO pins in order to send a message
+
+	Input:
+		msg: bitfield struct of DATA_PATH_SIZE with the message to be sent
+		datapath[]: Array of GPIO pin reference numbers to use as a datapath
+
+	Returns: void
+*/
 void sendMessage(message msg, int dataPath[])
 {
 	int i;
@@ -22,6 +42,8 @@ void sendMessage(message msg, int dataPath[])
 	fileHandles = openGPIOHandles(dataPath, GPIO_DIRECTION_OUT, DATA_PATH_SIZE);
 	writeGPIO(strobeHandle, 0);
 	usleep(1000*WAIT_MS);
+
+	// set each a IO pin to a value specified by the msg bitfield
 	for (i = 0; i < DATA_PATH_SIZE; i++)
 	{
 		tmp = 0;
@@ -36,6 +58,15 @@ void sendMessage(message msg, int dataPath[])
 	close(strobeHandle);
 }
 
+/* Function: Send Message
+
+	Purpose: Sets STROBE and IO pins in order to receive a  message
+
+	Input:
+		datapath[]: Array of GPIO pin reference numbers to use as a datapath
+
+	Rerutns: message struct with bitfieald of sixze DATA_PATH_SIZE 
+*/
 message receiveMessage (int dataPath[])
 {
 	int i;
@@ -54,7 +85,7 @@ message receiveMessage (int dataPath[])
 	usleep(100*WAIT_MS);
 
 	printf("\033[s\033[14;0H");
-		
+	//set each bit in the IO to the pin that corresponds to its position
 	for (i = 0; i < DATA_PATH_SIZE; i++)
 	{
 		tmp = readGPIO(fileHandles[i]);

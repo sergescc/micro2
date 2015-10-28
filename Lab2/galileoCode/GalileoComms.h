@@ -1,3 +1,14 @@
+/** GalileoComms.h
+
+	Created: 10/26/2015
+
+	Created BY: Ian Copithorne,
+	Edited By; Sergio Coronado and Joseph Braught
+
+	Purpose: function prototypes for sending and receiving messages
+	and structure definition for messaging
+
+*/
 #ifndef GALILEO_COMMS
 #define GALILEO_COMMS
 

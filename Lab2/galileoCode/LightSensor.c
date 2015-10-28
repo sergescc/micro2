@@ -1,3 +1,15 @@
+/** LightSensor.h
+
+	Created: 10/20/2015
+
+	Created BY: Ian Copithorne,
+	Edited By; Sergio Coronado and Joseph Braught
+
+	Purpose: Program that interfaces with a light sensor module
+	that can measure teh voltage of across a photo resistor
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -13,8 +25,19 @@
 #define true (1)
 #define false (0)
 
-bool continueGraphing;
-pthread_mutex_t cGmutex;
+//Global Variables used for graphing
+bool continueGraphing;		// Exit or Continue to Graph
+pthread_mutex_t cGmutex;	// Mutecx lock for continueGraphing variable
+
+/* Function: printMenu()
+
+	Purpose: prints a Menu from where the user can choose 
+
+	Input:
+		void
+
+	Returns: void
+*/
 
 void printMenu()
 {
@@ -49,10 +72,32 @@ void printMenu()
 	recallCursor();
 }
 
+/* Function: clearInputBuffer
+
+	Purpose: clears the input buffer to aviod reading erroneuos commands 
+
+	Input:
+		void
+
+	Returns: void
+*/
+
 void clearInputBuffer()
 {
 	while (getchar() != '\n');
 }
+
+/* Function: geVoltage
+
+	Purpose: Quiet protocla to get a voltage reading 
+	returns value of teh voltage reading   
+
+	Input:
+		dataPath: GPIO pins to use as the datapath 
+
+	Returns: 
+		float voltage: voltage rad by module
+*/
 
 float getVoltage(int dataPath[])
 {
@@ -97,6 +142,16 @@ float getVoltage(int dataPath[])
 	return (voltage);
 
 }
+
+/* Function: graphVoltage
+
+	Purpose:Graphs a continue stream of voltage values  
+
+	Input:
+		dataPath: GPIO pins to use as the datapath 
+
+	Returns: void
+*/
 
 void * graphVoltage(void * dataPath)
 {
@@ -200,7 +255,16 @@ void * graphVoltage(void * dataPath)
 	pthread_exit(0);
 }
 
+/* Function: main
 
+	Purpose: main program performs UI controls and forwards cmd
+	 through function calls  
+
+	Input:
+		void 
+
+	Returns: o if clean termnation 
+*/
 int main (void)
 {
 	char cmd;
