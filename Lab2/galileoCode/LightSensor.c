@@ -1,4 +1,4 @@
-/** LightSensor.h
+/** LightSensor.c
 
 	Created: 10/20/2015
 
