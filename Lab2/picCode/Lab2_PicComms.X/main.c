@@ -55,11 +55,14 @@
 #define high 1
 #define low 0
 
+
+
+
 bool always_on;
 bool adc_on;
 unsigned int voltage;
 
-
+//Enum valid Messages
 enum messages {
     MSG_RESET   = 0x0,
     MSG_PING    = 0x1,
@@ -71,11 +74,20 @@ enum messages {
     MSG_OFF = 0xC
 };
 
+//Structure used for message communication
+
 typedef struct
 {
     unsigned char data :4;
     
 }message;
+
+
+/* Function: setSend
+
+  Purpose: set registers to Send mode
+
+*/
 
 void set_send()
 {
@@ -83,11 +95,24 @@ void set_send()
     return;
 }
 
+/* Function: setReceive
+
+  Purpose: set registers to Receive mode
+
+*/
+
 void set_receive()
 {
     TRISC |= 0b00111100;
     return;
 }
+
+/* Function: set strope input
+
+  Purpose: set strope to be and input
+
+*/
+
 
 void set_strobe_input()
 {
@@ -97,6 +122,11 @@ void set_strobe_input()
     set_receive();
     return;
 }
+
+/* Function: adc_init
+
+  Purpose: set Setup interrupts and adc 
+*/
 
 void adc_init ()
 {   
@@ -123,7 +153,7 @@ void adc_init ()
 }
 
 
-
+//Turn interrputs On
 
 void interrupt_on()
 {
@@ -131,11 +161,16 @@ void interrupt_on()
     return;
 }
 
+//Turn interrputs Off
+
 void interrupt_off()
 {
     INTCONbits.GIE = 0;
     return;
 }
+
+
+//delay loop designed to bebounce transition
 
 void waitWhileStrobeStateIs(state waitState)
 {
@@ -144,6 +179,13 @@ void waitWhileStrobeStateIs(state waitState)
     for (i = 0; i < 1000; i++);
     while (RA2 == waitState) continue;
 }
+
+/* Function: receiveMsg
+
+    Purpose: Reads a message from PORTC and returns its bitfield
+
+    Returns: bitfield
+*/
 
 message receive_msg()
 {
@@ -155,6 +197,11 @@ message receive_msg()
     msg.data |= PORTC >> 2;
     return msg;
 }
+
+/* Function: sendMessage
+
+    Purpose: Sendss a message via PORTC 
+*/
 
 void send_message( message msg)
 {
@@ -168,6 +215,13 @@ void send_message( message msg)
     //wait for galileo to read message
     return;
 }
+
+
+/* Function: isr
+
+    Purpose: specifies interrupt handling, timer 
+    loop that triggers ADC every certain amount of time .
+*/
 
 void interrupt isr(void)
 {

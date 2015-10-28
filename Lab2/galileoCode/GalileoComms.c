@@ -58,7 +58,7 @@ void sendMessage(message msg, int dataPath[])
 	close(strobeHandle);
 }
 
-/* Function: Send Message
+/* Function:ReceiveMessage
 
 	Purpose: Sets STROBE and IO pins in order to receive a  message
 

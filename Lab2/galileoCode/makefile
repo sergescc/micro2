@@ -1,3 +1,8 @@
+# MAKEFILE: u
+# Created By: Sergio Coronado
+# 10/24/15
+# Purpose: used to build and compile the sensor app
+
 LINK_TARGET = sensor
 
 OBJS = CursorCntl.o GalileoComms.o GalileoGPIO.o LightSensor.o
