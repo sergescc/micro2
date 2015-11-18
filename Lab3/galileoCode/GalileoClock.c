@@ -10,7 +10,7 @@ void readClock(int file)
 {
 	unsigned char command[2];
 	unsigned char value[4];
-    useconds_t delay = 2000;
+        useconds_t delay = 2000;
 	
 	for(i=0; i < 6; i++)
 			{
@@ -45,4 +45,28 @@ int setClock(int file, unsigned char day, unsigned char hour, unsigned char min,
 		usleep(delay);
 			
 	}
+}
+
+int initI2C()
+{
+    int fd;
+    int r;
+    
+    char *dev = "/dev/i2c-1";
+    int addr = 0x68;
+	
+    fd = open(dev, O_RDWR );
+    if(fd < 0)
+    {
+            perror("Opening i2c device node\n");
+            return 1;
+    }
+		
+    r = ioctl(fd, I2C_SLAVE, addr);
+		
+    if(r < 0)
+    {
+            perror("Selecting i2c device\n");
+    }
+    return r;
 }
