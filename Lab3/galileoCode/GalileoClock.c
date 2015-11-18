@@ -6,10 +6,9 @@
 
 #include "GalileoClock.h"
 
-void readClock(int file)
+void readClock(int file, unsigned char *value)
 {
 	unsigned char command[2];
-	unsigned char value[4];
         useconds_t delay = 2000;
 	
 	for(i=0; i < 6; i++)
