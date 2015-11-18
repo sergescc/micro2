@@ -27,7 +27,7 @@ void readClock(int file, unsigned char value[])
 				usleep(delay);
 			
 			}
-			printf("Time is %02x Days %02x hours %02x minutes %02x seconds\n", value[3], value[2], value[1], value[0]);
+			//printf("Time is %02x Days %02x hours %02x minutes %02x seconds\n", value[3], value[2], value[1], value[0]);
 }
 
 int setClock(int file, unsigned char day, unsigned char hour, unsigned char min, unsigned char sec)
