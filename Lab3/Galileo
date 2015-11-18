@@ -1,0 +1,245 @@
+/*
+ * File:   PIC and Galileo communication          
+ *         
+ * 
+ * simple Galileo program example
+ * for UMass Lowell 16.480/552
+ * 
+ * Author: Roy
+ *
+ * Created on 2014/9/13
+ */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+#define Strobe     (26) // IO8
+#define GP_4       (28) // IO4
+#define GP_5	   (17) // IO5
+#define GP_6	   (24) // IO6
+#define GP_7	   (27) // IO7
+#define GPIO_DIRECTION_IN      (1)  
+#define GPIO_DIRECTION_OUT     (0)
+#define ERROR                  (-1)
+
+//open GPIO and set the direction
+int openGPIO(int gpio, int direction )
+{
+        1.set the GPIO
+        2.set the direction          
+        3.set the voltage
+		
+		char buffer[256];
+        int fileHandle;
+        int fileMode;
+
+  //Export GPIO
+        fileHandle = open("/sys/class/gpio/export", O_WRONLY);
+        if(ERROR == fileHandle)
+        {
+               puts("Error: Unable to opening /sys/class/gpio/export");
+               return(-1);
+        }
+        sprintf(buffer, "%d", gpio);
+        write(fileHandle, buffer, strlen(buffer));
+        close(fileHandle);
+
+   //Direction GPIO
+        sprintf(buffer, "/sys/class/gpio/gpio%d/direction", gpio);
+        fileHandle = open(buffer, O_WRONLY);
+        if(ERROR == fileHandle)
+        {
+               puts("Unable to open file:");
+               puts(buffer);
+               return(-1);
+        }
+
+        if (direction == GPIO_DIRECTION_OUT)
+        {
+               // Set out direction
+               write(fileHandle, "out", 3);
+               fileMode = O_WRONLY;
+        }
+        else
+        {
+               // Set in direction
+               write(fileHandle, "in", 2);
+               fileMode = O_RDONLY;
+        }
+        close(fileHandle);
+
+
+   //Open GPIO for Read / Write
+        sprintf(buffer, "/sys/class/gpio/gpio%d/value", gpio);
+        fileHandle = open(buffer, fileMode);
+        if(ERROR == fileHandle)
+        {
+               puts("Unable to open file:");
+               puts(buffer);
+               return(-1);
+        }
+
+        return(fileHandle);  //This file handle will be used in read/write and close operations.
+}
+
+//write value
+int writeGPIO(int fHandle, int val)
+{
+    if(val == 0)
+	{
+		write(fhandle, "0", 1);
+	}
+	else
+	{
+		write(fhandle, "1", 1);
+	}
+	
+	return(0);
+}
+
+//Read from the GPIO
+int readGPIO(int fileHandle, int gpio)
+{
+	int value;
+    //Reopening the file again in read mode, since data was not refreshing.
+    fileHandle = openFileForReading(gpio);
+    read(fileHandle, &value, 1);
+		
+    if('0' == value)
+    {
+        // Current GPIO status low
+        value = 0;
+    }
+    else
+    {
+        // Current GPIO status high
+        value = 1;
+    }
+    close(fileHandle);
+    return value;
+
+}
+
+typedef struct{
+	
+	typedef struct {
+	unsigned char bit1 :1;
+	unsigned char bit2 :1;
+	unsigned char bit3 :1;
+	unsigned char bit4 :1;
+	} data:
+} message:
+
+//main
+int main(void)
+{
+ 	  int fileHandleGPIO_4;
+	int fileHandleGPIO_5;
+	int fileHandleGPIO_6;
+	int fileHandleGPIO_7;
+	int fileHandleGPIO_S;
+	
+	int adcVal = 0;
+	message temp;
+	message recMsg;
+	
+	fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_OUT);
+	fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
+	fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
+	fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
+	fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
+       
+        while(1)
+        {
+			char cmd;
+			printf("Command (G,P,R):");
+			scanf("%c", &cmd);
+			if (cmd == "G")
+			{
+				writeGPIO(fileHandleGPIO_S, 0);
+				//write command
+				writeGPIO(fileHandleGPIO_4, 0);
+				writeGPIO(fileHandleGPIO_5, 1);
+				writeGPIO(fileHandleGPIO_6, 0);
+				writeGPIO(fileHandleGPIO_7, 0);
+			
+				writeGPIO(fileHandleGPIO_S, 1);
+				//wait for pic to read
+				usleep(1000*10);
+				//end write operation
+				writeGPIO(fileHandleGPIO_S, 0);
+				//
+				for(int i = 0; i < 3; i++)
+				{
+					writeGPIO(fileHandleGPIO_S, 1);
+				
+					//Read first nibble set
+					temp = readGPIO(fileHandleGPIO_7, GP_7);
+					recMsg.data.bit4 = temp.data.bit1;
+					temp = readGPIO(fileHandleGPIO_6, GP_6);
+					recMsg.data.bit3 = temp.data.bit1;
+					temp = readGPIO(fileHandleGPIO_5, GP_5);
+					recMsg.data.bit2 = temp.data.bit1;
+					temp = readGPIO(fileHandleGPIO_4, GP_4);
+					recMsg.data.bit1 = temp.data.bit1;
+				
+					// put nibble into adcVal
+					adcVal << recMsg.data;
+					usleep(1000*10);
+					writeGPIO(fileHandleGPIO_S, 0);
+				}
+			
+    		}
+			else if(cmd == "P")
+			{
+				bool msgack = false;
+				writeGPIO(fileHandleGPIO_S, 0);
+				//write command
+				writeGPIO(fileHandleGPIO_4, 1);
+				writeGPIO(fileHandleGPIO_5, 0);
+				writeGPIO(fileHandleGPIO_6, 0);
+				writeGPIO(fileHandleGPIO_7, 0);
+			
+				writeGPIO(fileHandleGPIO_S, 1);
+				//wait for pic to read
+				usleep(1000*10);
+				//end write operation
+				writeGPIO(fileHandleGPIO_S, 0);
+				
+				writeGPIO(fileHandleGPIO_S, 1);
+				temp = readGPIO(fileHandleGPIO_4, GP_4);
+				if (temp.data.bit1 == "0")
+					msgack = true;
+				printf("Message Acknowledged\n");
+			}
+			else if(cmd == "R")
+			{
+				bool msgack = false;
+				writeGPIO(fileHandleGPIO_S, 0);
+				//write command
+				writeGPIO(fileHandleGPIO_4, 1);
+				writeGPIO(fileHandleGPIO_5, 0);
+				writeGPIO(fileHandleGPIO_6, 0);
+				writeGPIO(fileHandleGPIO_7, 0);
+			
+				writeGPIO(fileHandleGPIO_S, 1);
+				//wait for pic to read
+				usleep(1000*10);
+				//end write operation
+				writeGPIO(fileHandleGPIO_S, 0);
+				
+				writeGPIO(fileHandleGPIO_S, 1);
+				temp = readGPIO(fileHandleGPIO_4, GP_4);
+				if (temp.data.bit1 == "0")
+					msgack = true;
+				printf("PIC Reset\n");
+			}
+			else
+			{
+				printf("Invalid Command");
+			}
+		}
+}

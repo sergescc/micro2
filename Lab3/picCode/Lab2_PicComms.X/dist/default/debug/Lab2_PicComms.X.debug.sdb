@@ -1,0 +1,115 @@
+[p LITE_MODE AUTOSTATIC PIC14 PICREGULAR PICMID ]
+[d version 1.1 ]
+[d edition pro ]
+[d chip 16F688 ]
+[d frameptr 6 ]
+"131 /home/sergio/LocalRepo/LabCode/Lab2/picCode/Lab2_PicComms.X/main.c
+[e E867 messages `uc
+MSG_RESET 0
+MSG_PING 1
+MSG_GET 2
+MSG_ACK 14
+MSG_NOTHING 15
+MSG_LIGHTLED 13
+]
+"62 /opt/microchip/xc8/v1.34/sources/common/float.c
+[v ___ftpack __ftpack `(f  1 e 3 0 ]
+"86 /opt/microchip/xc8/v1.34/sources/common/ftadd.c
+[v ___ftadd __ftadd `(f  1 e 3 0 ]
+"6 /opt/microchip/xc8/v1.34/sources/pic/eeprom.c
+[v _eecpymem eecpymem `(v  1 e 0 0 ]
+"24
+[v _memcpyee memcpyee `(v  1 e 0 0 ]
+"49 /home/sergio/LocalRepo/LabCode/Lab2/picCode/Lab2_PicComms.X/main.c
+[v _set_receive set_receive `(v  1 e 0 0 ]
+"68
+[v _set_send set_send `(v  1 e 0 0 ]
+"44
+[s S27 . 1 `uc 1 data 1 0 :4:0 
+]
+"81
+[v _receive_msg receive_msg `(S27  1 e 1 0 ]
+"93
+[v _send_message send_message `(v  1 e 0 0 ]
+"109
+[v _main main `(i  1 e 2 0 ]
+"158
+[v _ISR ISR `II(v  1 e 0 0 ]
+"209 /opt/microchip/xc8/v1.34/include/pic16f688.h
+[v _PORTC PORTC `VEuc  1 e 1 @7 ]
+"277
+[v _INTCON INTCON `VEuc  1 e 1 @11 ]
+"867
+[v _ADRESH ADRESH `VEuc  1 e 1 @30 ]
+"873
+[v _ADCON0 ADCON0 `VEuc  1 e 1 @31 ]
+"1031
+[v _TRISA TRISA `VEuc  1 e 1 @133 ]
+"1080
+[v _TRISC TRISC `VEuc  1 e 1 @135 ]
+"1129
+[v _PIE1 PIE1 `VEuc  1 e 1 @140 ]
+"1359
+[v _ANSEL ANSEL `VEuc  1 e 1 @145 ]
+"1910
+[v _ADRESL ADRESL `VEuc  1 e 1 @158 ]
+"1916
+[v _ADCON1 ADCON1 `VEuc  1 e 1 @159 ]
+"1979
+[v _ADIF ADIF `VEb  1 e 0 @102 ]
+"2053
+[v _GO GO `VEb  1 e 0 @249 ]
+"2123
+[v _RA2 RA2 `VEb  1 e 0 @42 ]
+"2135
+[v _RC0 RC0 `VEb  1 e 0 @56 ]
+"31 /home/sergio/LocalRepo/LabCode/Lab2/picCode/Lab2_PicComms.X/main.c
+[v _always_on always_on `uc  1 e 1 0 ]
+"109
+[v _main main `(i  1 e 2 0 ]
+{
+[s S27 . 1 `uc 1 data 1 0 :4:0 
+]
+"112
+[v main@msg msg `S27  1 a 1 3 ]
+"155
+} 0
+"93
+[v _send_message send_message `(v  1 e 0 0 ]
+{
+[s S27 . 1 `uc 1 data 1 0 :4:0 
+]
+[v send_message@msg msg `S27  1 a 1 wreg ]
+[v send_message@msg msg `S27  1 a 1 wreg ]
+"96
+"93
+[v send_message@msg msg `S27  1 a 1 6 ]
+"105
+} 0
+"68
+[v _set_send set_send `(v  1 e 0 0 ]
+{
+"72
+} 0
+"44
+[s S27 . 1 `uc 1 data 1 0 :4:0 
+]
+"81
+[v _receive_msg receive_msg `(S27  1 e 1 0 ]
+{
+"83
+[v receive_msg@msg msg `S27  1 a 1 6 ]
+"91
+} 0
+"49
+[v _set_receive set_receive `(v  1 e 0 0 ]
+{
+"53
+} 0
+"158
+[v _ISR ISR `II(v  1 e 0 0 ]
+{
+"162
+[v ISR@darkness darkness `uc  1 a 1 5 ]
+"177
+} 0
