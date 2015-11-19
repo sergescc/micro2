@@ -12,7 +12,7 @@ void readClock(int file, unsigned char value[])
 	int received;
 	unsigned char command[2];
 
-    useconds_t delay = 2000;
+	useconds_t delay = 2000;
 	
 	for(i=0; i < 7; i++)
 	{
@@ -23,7 +23,7 @@ void readClock(int file, unsigned char value[])
 		usleep(delay);
 		
 		received = read(file, &value[i], 1);
-		if(recieved != 1)
+		if(received != 1)
 		{
 			perror("reading i2c device\n");
 		}
@@ -36,13 +36,14 @@ void readClock(int file, unsigned char value[])
 
 int setClock(int file, unsigned char wValue[])
 {
+	int i;
 	int sent;
 
 	useconds_t delay = 2000;
 	wValue[2] = wValue[2] | 0x60;
 	for(i=0; i < 7; i++)
 	{
-		sent = write(fd, &wValue, 2);
+		sent = write(file , &wValue, 2);
 		usleep(delay);
 			
 	}

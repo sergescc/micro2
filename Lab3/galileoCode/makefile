@@ -5,7 +5,7 @@
 
 LINK_TARGET = sensor
 
-OBJS = CursorCntl.o GalileoComms.o GalileoGPIO.o LightSensor.o
+OBJS = CursorCntl.o GalileoComms.o GalileoGPIO.o LightSensor.o GalileoClock.o
 
 
 all: sensor
@@ -24,6 +24,8 @@ GalileoComs.o: GalileoComms.c GalileoComms.h GalileoGPIO.h
 
 LightSensor.o: LightSensor.c  CursorCntl.o GalileoComms.o GalileoGPIO.o
 	gcc -Wall -c -pthread LightSensor.c 
+
+GalileoClock.o: GalileoClock.c GalileoClock.h
 
 clean: 
 	rm *.o sensor
