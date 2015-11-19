@@ -8,38 +8,41 @@
 
 void readClock(int file, unsigned char value[])
 {
+	int i;
+	int received;
 	unsigned char command[2];
-        useconds_t delay = 2000;
+
+    useconds_t delay = 2000;
 	
 	for(i=0; i < 7; i++)
-			{
-				command[0] = 0x00 | i; // address in rtc to read
-				command[1]++;
-				
-				file = write(fd, &command, 2);
-				usleep(delay);
-				
-				file = read(fd, &value[i], 1);
-				if(file != 1)
-				{
-					perror("reading i2c device\n");
-				}
-				usleep(delay);
+	{
+		command[0] = 0x00 | i; // address in rtc to read
+		command[1]++;
+		
+		received = write(file, &command, 2);
+		usleep(delay);
+		
+		received = read(file, &value[i], 1);
+		if(recieved != 1)
+		{
+			perror("reading i2c device\n");
+		}
+		usleep(delay);
 			
-			}
-			value[2] = value[2] & 0xBF;
-			//printf("Time is %02x Days %02x hours %02x minutes %02x seconds\n", value[3], value[2], value[1], value[0]);
+	}
+	value[2] = value[2] & 0xBF;
+	//printf("Time is %02x Days %02x hours %02x minutes %02x seconds\n", value[3], value[2], value[1], value[0]);
 }
 
 int setClock(int file, unsigned char wValue[])
 {
-	
+	int sent;
 
 	useconds_t delay = 2000;
 	wValue[2] = wValue[2] | 0x60;
 	for(i=0; i < 7; i++)
 	{
-		file = write(fd, &wValue, 2);
+		sent = write(fd, &wValue, 2);
 		usleep(delay);
 			
 	}
