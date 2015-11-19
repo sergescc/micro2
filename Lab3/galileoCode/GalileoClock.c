@@ -45,13 +45,15 @@ int setClock(int file, unsigned char wValue[])
 	out[0] = 0x00;
 	wValue[0] &= 0xBF;
 	wValue[1] &= 0x7F;
+	wValue[3] = 0x01;
 
 	for ( i = 1; i < 8 ; i++)
 	{
 		out[i] = wValue[i -1];
 	}
 
-	sent = write(file , wValue, 8);
+	sent = write(file , out , 8);
+
 	if (sent != 8)
 	{
 		printf("Connection Failure");

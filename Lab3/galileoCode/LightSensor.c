@@ -278,6 +278,7 @@ int main (void)
 	int strobeHandle;
 	int i2cHandle;
 	int adcValue;
+	int readTime;
 	float voltage;
 	int dataPath[DATA_PATH_SIZE] = {GP_4, GP_5, GP_6, GP_7};
 	pthread_t displayThread;
@@ -515,36 +516,51 @@ int main (void)
 
 				break;
 			}
-				case 'S':
+			case 'S':
 			{
+				
+
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Year: ");
-				scanf(" %x", &timeArray[6]);
+				scanf("%x", &readTime);
+				timeArray[6] = readTime;
+			
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Month: ");
-				scanf(" %x", &timeArray[5]);
+				scanf("%x", &readTime);
+				timeArray[5] = readTime;
+			
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Day: ");
-				scanf(" %x", &timeArray[4]);
+				scanf("%x", &readTime);
+				timeArray[4] = readTime;
+
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Hour: ");
-				scanf(" %x", &timeArray[2]);
+				scanf("%x", &readTime);
+				timeArray[2] = readTime;
+				
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Minute: ");
-				scanf(" %x", &timeArray[1]);
+				scanf("%x", &readTime);
+				timeArray[1] = readTime;
+
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Second: ");
-				scanf(" %x", &timeArray[0]);
-
-				timeArray[3] = 0x0;
+				scanf("%x", &readTime);
+				timeArray[0] = readTime;
+				timeArray[3] = 0x01;
 
 				setClock(clockFile, timeArray);
+
+				clearInputBuffer();
+
 				break;
 			}
 			case 'Q':
