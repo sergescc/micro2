@@ -10,27 +10,26 @@ void readClock(int file, unsigned char value[])
 {
 	int i;
 	int received;
-	unsigned char command[2];
+	value[0] = 0x00;
 
-	useconds_t delay = 2000;
+	received = write(file, value, 1);
 	
-	for(i=0; i < 7; i++)
+	if (received != 1)
 	{
-		command[0] = 0x00 | i; // address in rtc to read
-		command[1]++;
-		
-		received = write(file, &command, 2);
-		usleep(delay);
-		
-		received = read(file, &value[i], 1);
-		if(received != 1)
-		{
-			perror("reading i2c device\n");
-		}
-		usleep(delay);
-			
+		printf("Connection Failure");
+
 	}
-	value[2] = value[2] & 0xBF;
+	else
+	{
+		received = read(file, value, 7);
+		if(received != 7)
+		{
+			printf("Connection Failure");	
+
+		}
+	}
+	
+	//value[2] &= 0xBF;
 	//printf("Time is %02x Days %02x hours %02x minutes %02x seconds\n", value[3], value[2], value[1], value[0]);
 }
 
@@ -39,14 +38,26 @@ int setClock(int file, unsigned char wValue[])
 	int i;
 	int sent;
 
-	useconds_t delay = 2000;
-	wValue[2] = wValue[2] | 0x60;
-	for(i=0; i < 7; i++)
+	unsigned char message;
+	
+	unsigned char out[8];
+		
+	out[0] = 0x00;
+	wValue[0] &= 0xBF;
+	wValue[1] &= 0x7F;
+
+	for ( i = 1; i < 8 ; i++)
 	{
-		sent = write(file , &wValue, 2);
-		usleep(delay);
-			
+		out[i] = wValue[i -1];
 	}
+
+	sent = write(file , wValue, 8);
+	if (sent != 8)
+	{
+		printf("Connection Failure");
+	}
+
+	//printf("Set clock is ending\n");
 }
 
 int initI2C()
@@ -54,7 +65,7 @@ int initI2C()
     int fd;
     int r;
     
-    char *dev = "/dev/i2c-1";
+    char *dev = "/dev/i2c-0";
     int addr = 0x68;
 	
     fd = open(dev, O_RDWR );
@@ -70,5 +81,5 @@ int initI2C()
     {
             perror("Selecting i2c device\n");
     }
-    return r;
+    return fd;
 }

@@ -414,7 +414,10 @@ int main (void)
 				voltage = 0;
 				msgOut.data = 0x2;
 				sendMessage(msgOut, dataPath);
-
+				
+				//gotoXY(MSG_X,MSG_Y);                                                    
+                                //clearLine(MSG_Y);                                                       
+                                //printf("Getting Voltage from Pic");
 				
 				for (i = 2; i >= 0; i--)
 				{
@@ -424,9 +427,16 @@ int main (void)
 					clearLine(MSG_Y);
 					printf("Message Received: %X", msgIn.data);
 				}
-
+				
 				msgIn = receiveMessage(dataPath);
+				//gotoXY(MSG_X,MSG_Y);                                                    
+                                //clearLine(MSG_Y);  	
+				//printf("Sending Request to Timer IC");
+				
 				readClock(clockFile,timeArray);
+				//gotoXY(MSG_X,MSG_Y);                                                    
+                                //clearLine(MSG_Y);  
+				//printf("Received Time from Timer IC");
 
 
 				if (msgIn.data == 0xE)
