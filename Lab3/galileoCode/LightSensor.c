@@ -507,27 +507,27 @@ int main (void)
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Year: ");
-				fscanf(" %x", timeArray[6]);
+				scanf(" %x", timeArray[6]);
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Month: ");
-				fscanf(" %x", timeArray[5]);
+				scanf(" %x", timeArray[5]);
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Day: ");
-				fscanf(" %x", timeArray[4]);
+				scanf(" %x", timeArray[4]);
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Hour: ");
-				fscanf(" %x", timeArray[2]);
+				scanf(" %x", timeArray[2]);
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Minute: ");
-				fscanf(" %x", timeArray[1]);
+				scanf(" %x", timeArray[1]);
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
 				printf("Enter Second: ");
-				fscanf(" %x", timeArray[0]);
+				scanf(" %x", timeArray[0]);
 
 				timeArray[3] = 0x0;
 
