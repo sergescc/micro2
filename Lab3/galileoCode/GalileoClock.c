@@ -11,7 +11,7 @@ void readClock(int file, unsigned char value[])
 	unsigned char command[2];
         useconds_t delay = 2000;
 	
-	for(i=0; i < 6; i++)
+	for(i=0; i < 7; i++)
 			{
 				command[0] = 0x00 | i; // address in rtc to read
 				command[1]++;
@@ -30,15 +30,11 @@ void readClock(int file, unsigned char value[])
 			//printf("Time is %02x Days %02x hours %02x minutes %02x seconds\n", value[3], value[2], value[1], value[0]);
 }
 
-int setClock(int file, unsigned char day, unsigned char hour, unsigned char min, unsigned char sec)
+int setClock(int file, unsigned char wValue[])
 {
-	unsigned char wValue[2];
-	wValue[0] = sec;
-	wValue[1] = min;
-	wValue[2] = hour;
-	wValue[3] = day;
+
 	useconds_t delay = 2000;
-	for(i=0; i < 4; i++)
+	for(i=0; i < 7; i++)
 	{
 		file = write(fd, &wValue, 2);
 		usleep(delay);
