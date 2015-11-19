@@ -1,10 +1,12 @@
 #ifndef GALILEO_CLOCK
 #define GALILEO_CLOCK
 
-int readClock(int file, unsigned char value[]);
+#define CLOCK_VECTOR_SIZE (7);
 
-int setClock(int file, unsigned char day, unsigned char hour, unsigned char min, unsigned char sec);
+void readClock(int file, unsigned char value[]);
 
-void initI2C();
+int setClock(int file, unsigned char value[]);
+
+int initI2C();
 
 #endif

@@ -9,6 +9,7 @@
 #define GP_5	   (17) // IO5
 #define GP_6	   (24) // IO6
 #define GP_7	   (27) // IO7
+#define GP_I2C 	   (29)
 #define GPIO_DIRECTION_IN  	(1)  
 #define GPIO_DIRECTION_OUT	(0)
 #define ERROR              	(-1)

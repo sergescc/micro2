@@ -17,6 +17,7 @@
 
 
 #include "GalileoGPIO.h"
+#include "GalileoClock.h"
 #include "CursorCntl.h"
 #include "GalileoComms.h"
 #include "WindowConfig.h"
@@ -272,12 +273,16 @@ int main (void)
 	message msgIn;
 	int i;
 	int strobeHandle;
+	int i2cHandle;
 	int adcValue;
 	float voltage;
 	int dataPath[DATA_PATH_SIZE] = {GP_4, GP_5, GP_6, GP_7};
 	pthread_t displayThread;
 	pthread_mutex_init (&cGmutex, NULL);
 
+	unsigned char timeArray[CLOCK_VECTOR_SIZE];
+	int clockFile;
+	clockFile = initI2C();
 
 	initiateGPIO(Strobe);
 	initiateGPIOArray(dataPath, DATA_PATH_SIZE);
@@ -285,7 +290,17 @@ int main (void)
 	writeGPIO(strobeHandle,1);
 	close(strobeHandle);
 
+	initiateGPIO(GP_I2C);
+	i2cHandle = openGPIO(GP_I2C, GPIO_DIRECTION_OUT);
+
+	writeGPIO(i2cHandle, 0);
+	close(i2cHandle);
+
+
+
 	clearPAGE();
+
+
 	
 
 	while (1)
@@ -408,6 +423,8 @@ int main (void)
 				}
 
 				msgIn = receiveMessage(dataPath);
+				readClock(clockFile,timeArray);
+
 
 				if (msgIn.data == 0xE)
 				{
@@ -418,6 +435,8 @@ int main (void)
 					printf("ADC Value: 0x%X", adcValue);
 					gotoXY(MSG_X,MSG_Y + 2);
 					printf("Voltage: %lf \033[u", voltage);
+					gotoXY(MSG_X,MSG_Y + 3);
+					printf("Date: %02x/%02x/%02x Time: %02x:%02x:%02x",timeArray[5], timeArray[4], timeArray[6], timeArray[2], timeArray[1], timeArray[0]);
 					gotoXY(STATUS_X,STATUS_Y);
 					setColor(RESET);
 					printf("[\033[0;32m OK \033[m]\t ADC Read Successful \033[u");
@@ -483,6 +502,38 @@ int main (void)
 
 				break;
 			}
+				case 'S':
+			{
+				gotoXY(MSG_X,MSG_Y);
+				clearLine(MSG_Y);
+				printf("Enter Year: ");
+				fscanf(" %hhu", &timeArray[6]);
+				gotoXY(MSG_X,MSG_Y);
+				clearLine(MSG_Y);
+				printf("Enter Month: ");
+				fscanf(" %hhu", &timeArray[5]);
+				gotoXY(MSG_X,MSG_Y);
+				clearLine(MSG_Y);
+				printf("Enter Day: ");
+				fscanf(" %hhu", &timeArray[4]);
+				gotoXY(MSG_X,MSG_Y);
+				clearLine(MSG_Y);
+				printf("Enter Hour: ");
+				fscanf(" %hhu", &timeArray[2]);
+				gotoXY(MSG_X,MSG_Y);
+				clearLine(MSG_Y);
+				printf("Enter Minute: ");
+				fscanf(" %hhu", &timeArray[1]);
+				gotoXY(MSG_X,MSG_Y);
+				clearLine(MSG_Y);
+				printf("Enter Second: ");
+				fscanf(" %hhu", &timeArray[0]);
+
+				timeArray[3] = 0x0;
+
+				setClock(clockFile, timeArray);
+				break;
+			}
 			case 'Q':
 			{
 				gotoXY(MSG_X,MSG_Y);
@@ -493,7 +544,6 @@ int main (void)
 				printf("\033[2J\033[0;0H\033[m");
 				exit(0);
 			}
-
 
 		}
 		recallCursor();

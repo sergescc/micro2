@@ -27,7 +27,7 @@
 #define REF_V (5)
 
 #define STATUS_X (6)
-#define STATUS_Y (17) 
+#define STATUS_Y (18) 
 
 
 #endif

@@ -33,6 +33,7 @@ void readClock(int file, unsigned char value[])
 
 int setClock(int file, unsigned char wValue[])
 {
+	
 
 	useconds_t delay = 2000;
 	wValue[2] = wValue[2] | 0x60;
