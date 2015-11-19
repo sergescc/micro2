@@ -17,6 +17,7 @@
 #define GP_5     (17) // IO5
 #define GP_6     (24) // IO6
 #define GP_7     (27) // IO7
+#define GP_I2C 	 (29) 
 
 //Definition of Direction
 
