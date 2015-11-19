@@ -27,6 +27,7 @@ void readClock(int file, unsigned char value[])
 				usleep(delay);
 			
 			}
+			value[2] = value[2] & 0xBF;
 			//printf("Time is %02x Days %02x hours %02x minutes %02x seconds\n", value[3], value[2], value[1], value[0]);
 }
 
@@ -34,6 +35,7 @@ int setClock(int file, unsigned char wValue[])
 {
 
 	useconds_t delay = 2000;
+	wValue[2] = wValue[2] | 0x60;
 	for(i=0; i < 7; i++)
 	{
 		file = write(fd, &wValue, 2);
