@@ -16,7 +16,7 @@
 #define MENU_START_Y	(4)
 
 #define MSG_X	(6)
-#define MSG_Y 	(14)
+#define MSG_Y 	(15)
 
 #define GRAPH_START_X (4)
 #define GRAPH_START_Y (4)

@@ -68,6 +68,9 @@ void printMenu()
 	printf("(D)isplay Graph");
 
 	gotoXY(MENU_START_X, menuLine++);
+	printf("(S)et Clock");
+
+	gotoXY(MENU_START_X, menuLine++);
 	printf("(Q)uit");
 
 	recallCursor();
