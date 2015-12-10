@@ -412,6 +412,7 @@ void * SensorThread ( void * params )
 		buildTimeStamp(sensor->timeArray, sensor->timestamp);
 
 		pthread_cond_signal(sensor->resultReady);
+		pthread_mutex_unlock(sensor->sensorAvailable);
 
 	}
 
