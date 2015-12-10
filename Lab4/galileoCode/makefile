@@ -14,16 +14,16 @@ sensor: $(OBJS)
 	gcc -Wall -g -pthread -lcurl $(OBJS) -o sensor
 
 CursorCntl.o: CursorCntl.c CursorCntl.h
-	gcc -Wall -c CursorCntl.c
+	gcc -Wall -c -g CursorCntl.c
 
 GalileoGPIO.o: GalileoGPIO.c GalileoGPIO.h
-	gcc -Wall -c GalileoGPIO.c 
+	gcc -Wall -c -g GalileoGPIO.c 
 
 GalileoComs.o: GalileoComms.c GalileoComms.h GalileoGPIO.h
-	gcc -Wall -c GalileoComms.c 
+	gcc -Wall -c -g GalileoComms.c 
 
 LightSensor.o: LightSensor.c  CursorCntl.o GalileoComms.o GalileoGPIO.o
-	gcc -Wall -c -pthread -lcurl LightSensor.c 
+	gcc -Wall -c -g -pthread -lcurl LightSensor.c 
 
 GalileoClock.o: GalileoClock.c GalileoClock.h
 
