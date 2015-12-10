@@ -1,7 +1,7 @@
 #ifndef DEBUG
 # define DEBUG
 
-# define pthread_mutex_lock printf("%d", phread_self());\
+# define pthread_mutex_lock printf("%d", pthread_self());\
 pthread_mutex_lock
 
 #endif
