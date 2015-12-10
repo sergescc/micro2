@@ -337,7 +337,7 @@ void * UpdateWebServer ( void * params )
 		pthread_mutex_unlock(sArgs->sensorLock);
 
 		adcval = getVoltage(sArgs);
-		buildTimeStamp(sArbregs->timeArray, timestamp);
+		buildTimeStamp(sArgs->timeArray, timestamp);
 		
 		snprintf(buf, 1024, "http://%s:%d/update?id=%d&password=%s&name=%s&data=%d&status=%c&timestamp=%s",
 			hostname,
