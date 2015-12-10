@@ -1,0 +1,222 @@
+[p LITE_MODE AUTOSTATIC PIC14 PICREGULAR PICMID ]
+[d version 1.1 ]
+[d edition pro ]
+[d chip 16F688 ]
+[d frameptr 6 ]
+"231 /home/sergio/LocalRepo/LabCode/Lab2/picCode/Lab2_PicComms.X/main.c
+[e E1017 messages `uc
+MSG_RESET 0
+MSG_PING 1
+MSG_GET 2
+MSG_ACK 14
+MSG_NOTHING 15
+MSG_LIGHTLED 13
+MSG_TOGGLEADC 3
+MSG_OFF 12
+]
+"62 /opt/microchip/xc8/v1.34/sources/common/float.c
+[v ___ftpack __ftpack `(f  1 e 3 0 ]
+"86 /opt/microchip/xc8/v1.34/sources/common/ftadd.c
+[v ___ftadd __ftadd `(f  1 e 3 0 ]
+"6 /opt/microchip/xc8/v1.34/sources/pic/eeprom.c
+[v _eecpymem eecpymem `(v  1 e 0 0 ]
+"24
+[v _memcpyee memcpyee `(v  1 e 0 0 ]
+"78 /home/sergio/LocalRepo/LabCode/Lab2/picCode/Lab2_PicComms.X/main.c
+[v _set_send set_send `(v  1 e 0 0 ]
+"84
+[v _set_receive set_receive `(v  1 e 0 0 ]
+"90
+[v _set_strobe_input set_strobe_input `(v  1 e 0 0 ]
+"99
+[v _adc_init adc_init `(v  1 e 0 0 ]
+"126
+[v _interrupt_on interrupt_on `(v  1 e 0 0 ]
+"132
+[v _interrupt_off interrupt_off `(v  1 e 0 0 ]
+"73
+[s S130 . 1 `uc 1 data 1 0 :4:0 
+]
+"138
+[v _receive_msg receive_msg `(S130  1 e 1 0 ]
+"152
+[v _send_message send_message `(v  1 e 0 0 ]
+"167
+[v _isr isr `II(v  1 e 0 0 ]
+"209
+[v _main main `(i  1 e 2 0 ]
+"209 /opt/microchip/xc8/v1.34/include/pic16f688.h
+[v _PORTC PORTC `VEuc  1 e 1 @7 ]
+[s S46 . 1 `uc 1 RAIF 1 0 :1:0 
+`uc 1 INTF 1 0 :1:1 
+`uc 1 T0IF 1 0 :1:2 
+`uc 1 RAIE 1 0 :1:3 
+`uc 1 INTE 1 0 :1:4 
+`uc 1 T0IE 1 0 :1:5 
+`uc 1 PEIE 1 0 :1:6 
+`uc 1 GIE 1 0 :1:7 
+]
+"300
+[s S55 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 TMR0IF 1 0 :1:2 
+`uc 1 . 1 0 :2:3 
+`uc 1 TMR0IE 1 0 :1:5 
+]
+[u S60 . 1 `S46 1 . 1 0 `S55 1 . 1 0 ]
+[v _INTCONbits INTCONbits `VES60  1 e 1 @11 ]
+[s S104 . 1 `uc 1 TMR1IF 1 0 :1:0 
+`uc 1 TXIF 1 0 :1:1 
+`uc 1 OSFIF 1 0 :1:2 
+`uc 1 C1IF 1 0 :1:3 
+`uc 1 C2IF 1 0 :1:4 
+`uc 1 RCIF 1 0 :1:5 
+`uc 1 ADIF 1 0 :1:6 
+`uc 1 EEIF 1 0 :1:7 
+]
+"374
+[s S113 . 1 `uc 1 T1IF 1 0 :1:0 
+]
+[u S115 . 1 `S104 1 . 1 0 `S113 1 . 1 0 ]
+[v _PIR1bits PIR1bits `VES115  1 e 1 @12 ]
+"867
+[v _ADRESH ADRESH `VEuc  1 e 1 @30 ]
+"873
+[v _ADCON0 ADCON0 `VEuc  1 e 1 @31 ]
+[s S139 . 1 `uc 1 ADON 1 0 :1:0 
+`uc 1 GO_nDONE 1 0 :1:1 
+`uc 1 CHS 1 0 :3:2 
+`uc 1 . 1 0 :1:5 
+`uc 1 VCFG 1 0 :1:6 
+`uc 1 ADFM 1 0 :1:7 
+]
+"903
+[s S146 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 GO 1 0 :1:1 
+`uc 1 CHS0 1 0 :1:2 
+`uc 1 CHS1 1 0 :1:3 
+`uc 1 CHS2 1 0 :1:4 
+]
+[s S152 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 nDONE 1 0 :1:1 
+]
+[s S155 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 GO_DONE 1 0 :1:1 
+]
+[u S158 . 1 `S139 1 . 1 0 `S146 1 . 1 0 `S152 1 . 1 0 `S155 1 . 1 0 ]
+[v _ADCON0bits ADCON0bits `VES158  1 e 1 @31 ]
+"962
+[v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
+"1031
+[v _TRISA TRISA `VEuc  1 e 1 @133 ]
+"1080
+[v _TRISC TRISC `VEuc  1 e 1 @135 ]
+[s S78 . 1 `uc 1 TMR1IE 1 0 :1:0 
+`uc 1 TXIE 1 0 :1:1 
+`uc 1 OSFIE 1 0 :1:2 
+`uc 1 C1IE 1 0 :1:3 
+`uc 1 C2IE 1 0 :1:4 
+`uc 1 RCIE 1 0 :1:5 
+`uc 1 ADIE 1 0 :1:6 
+`uc 1 EEIE 1 0 :1:7 
+]
+"1149
+[s S87 . 1 `uc 1 T1IE 1 0 :1:0 
+]
+[u S89 . 1 `S78 1 . 1 0 `S87 1 . 1 0 ]
+[v _PIE1bits PIE1bits `VES89  1 e 1 @140 ]
+"1359
+[v _ANSEL ANSEL `VEuc  1 e 1 @145 ]
+[s S22 . 1 `uc 1 ANS0 1 0 :1:0 
+`uc 1 ANS1 1 0 :1:1 
+`uc 1 ANS2 1 0 :1:2 
+`uc 1 ANS3 1 0 :1:3 
+`uc 1 ANS4 1 0 :1:4 
+`uc 1 ANS5 1 0 :1:5 
+`uc 1 ANS6 1 0 :1:6 
+`uc 1 ANS7 1 0 :1:7 
+]
+"1376
+[u S31 . 1 `S22 1 . 1 0 ]
+[v _ANSELbits ANSELbits `VES31  1 e 1 @145 ]
+"1910
+[v _ADRESL ADRESL `VEuc  1 e 1 @158 ]
+"1916
+[v _ADCON1 ADCON1 `VEuc  1 e 1 @159 ]
+"1979
+[v _ADIF ADIF `VEb  1 e 0 @102 ]
+"2123
+[v _RA2 RA2 `VEb  1 e 0 @42 ]
+"2135
+[v _RC0 RC0 `VEb  1 e 0 @56 ]
+"2183
+[v _T0IF T0IF `VEb  1 e 0 @90 ]
+"56 /home/sergio/LocalRepo/LabCode/Lab2/picCode/Lab2_PicComms.X/main.c
+[v _always_on always_on `i  1 e 2 0 ]
+"57
+[v _adc_on adc_on `i  1 e 2 0 ]
+"58
+[v _voltage voltage `ui  1 e 2 0 ]
+"209
+[v _main main `(i  1 e 2 0 ]
+{
+[s S130 . 1 `uc 1 data 1 0 :4:0 
+]
+"212
+[v main@msg msg `S130  1 a 1 0 ]
+"273
+} 0
+"90
+[v _set_strobe_input set_strobe_input `(v  1 e 0 0 ]
+{
+"97
+} 0
+"152
+[v _send_message send_message `(v  1 e 0 0 ]
+{
+[s S130 . 1 `uc 1 data 1 0 :4:0 
+]
+[v send_message@msg msg `S130  1 a 1 wreg ]
+[v send_message@msg msg `S130  1 a 1 wreg ]
+[v send_message@msg msg `S130  1 a 1 7 ]
+"165
+} 0
+"78
+[v _set_send set_send `(v  1 e 0 0 ]
+{
+"82
+} 0
+"73
+[s S130 . 1 `uc 1 data 1 0 :4:0 
+]
+"138
+[v _receive_msg receive_msg `(S130  1 e 1 0 ]
+{
+"140
+[v receive_msg@msg msg `S130  1 a 1 7 ]
+"150
+} 0
+"84
+[v _set_receive set_receive `(v  1 e 0 0 ]
+{
+"88
+} 0
+"132
+[v _interrupt_off interrupt_off `(v  1 e 0 0 ]
+{
+"136
+} 0
+"126
+[v _interrupt_on interrupt_on `(v  1 e 0 0 ]
+{
+"130
+} 0
+"99
+[v _adc_init adc_init `(v  1 e 0 0 ]
+{
+"121
+} 0
+"167
+[v _isr isr `II(v  1 e 0 0 ]
+{
+"206
+} 0
