@@ -22,7 +22,7 @@
 #include "CursorCntl.h"
 #include "GalileoComms.h"
 #include "WindowConfig.h"
-#include "debug.h" 
+// #include "debug.h" 
 
 #define bool int
 #define true (1)
