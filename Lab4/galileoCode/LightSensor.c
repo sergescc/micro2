@@ -151,8 +151,6 @@ float getVoltage(s_Args * sensor)
 
 	pthread_cond_signal(sensor->requestReady);
 	pthread_cond_wait(sensor->resultReady, sensor->sensorAvailable);
-	pthread_mutex_unlock(sensor->sensorAvailable);
-	pthread_mutex_unlock(sensor->sensorLock);
 
 
 	for (i = 2; i >= 0; i--)
@@ -337,6 +335,7 @@ void * UpdateWebServer ( void * params )
 		status = *(wArgs->userCmd);
 
 		adcval = getVoltage(sArgs);
+
 		buildTimeStamp(sArgs->timeArray, timestamp);
 		
 		snprintf(buf, 1024, "http://%s:%d/update?id=%d&password=%s&name=%s&data=%d&status=%c&timestamp=%s",
