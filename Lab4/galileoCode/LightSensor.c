@@ -395,7 +395,7 @@ void * SensorThread ( void * params )
 			{
 				sensor->msgOut->data = 0x2;
 				sendMessage(*sensor->msgOut, sensor->dataPath);
-				for ( i = 0; i < 4; i ++)
+				for ( i = 0; i < 3; i ++)
 				{
 					sensor->msgIn[i] = receiveMessage(sensor->dataPath);
 				}
