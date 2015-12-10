@@ -151,6 +151,9 @@ float getVoltage(s_Args * sensor)
 
 	pthread_cond_signal(sensor->requestReady);
 	pthread_cond_wait(sensor->resultReady, sensor->sensorAvailable);
+	pthread_mutex_unlock(sensor->sensorAvailable);
+	pthread_mutex_unlock(sensor->sensorLock);
+
 
 	for (i = 2; i >= 0; i--)
 	{
@@ -160,17 +163,16 @@ float getVoltage(s_Args * sensor)
 	if (sensor->msgIn[3].data == 0xE)
 	{
 		adcValue &= 0x3FF;
-		voltage = (float) ((adcValue/1024.0) * 5.0); 
+		voltage = (float) ((adcValue/1024.0) * 5.0);
 
 	}
-
 	else
 	{
 		gotoXY(STATUS_X,STATUS_Y);
 		clearLine(STATUS_Y);
 		setColor(RESET);
 		printf("[\033[0;31m Error \033[m]\t Message Acknowledgment Failed \033[u");
-		return (-1);
+		
 	}
 
 	pthread_mutex_unlock(sensor->sensorAvailable);
