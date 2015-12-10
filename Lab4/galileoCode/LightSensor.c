@@ -414,7 +414,7 @@ void * SensorThread ( void * params )
 
 		pthread_cond_signal(sensor->resultReady);
 
-		pthred_mutex_unlock(sensor->sensorAvailable);
+		pthread_mutex_unlock(sensor->sensorAvailable);
 
 	}
 
