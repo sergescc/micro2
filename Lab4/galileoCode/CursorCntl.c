@@ -13,6 +13,7 @@
 
 #include "CursorCntl.h"
 
+#define DEBUG
 
 //Set Color
 
@@ -71,14 +72,22 @@ void setColor(Colors color)
 
 void gotoXY(int X, int Y)
 {
+	#ifdef DEBUG
+	printf("\n");
+	#else
 	printf("\033[%d;%dH", Y, X);
+	#endif
 }
 
 //saves the current position of the cursor
 
 void saveCursor()
 {
+	#ifdef DEBUG
+	printf("\n");
+	#else
 	printf ("\033[s");
+	#endif
 }
 
 // clears from the current position to the end of the line
@@ -93,26 +102,42 @@ void clearEOL()
 
 void clearPAGE()
 {
+	#ifdef DEBUG
+	printf("\n");
+	#else
 	printf ("\033[2J");
+	#endif
 }
 
 //recalls cursor to last saved position
 
 void recallCursor()
 {
+	#ifdef DEBUG
+	printf("\n");
+	#else
 	printf ("\033[u");
+	#endif
 }
 
 // clears below a specified line
 
 void clearBelowLine(int line)
 {
+	#ifdef DEBUG
+	printf("\n");
+	#else
 	printf ("\033[J");
+	#endif
 }
 
 //clears the entire line specified
 
 void clearLine(int line)
 {
+	#ifdef DEBUG
+	printf("\n");
+	#else
 	printf ("\033[s\033[%d;0H\033[2K\033[u", line);
+	#endif
 }

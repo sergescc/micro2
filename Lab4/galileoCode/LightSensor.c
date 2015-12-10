@@ -147,7 +147,7 @@ float getVoltage(s_Args * sensor)
 
 	pthread_mutex_lock(sensor->sensorLock);
 
-	*sensor->cmd = 'G';
+	(*sensor->cmd) = 'G';
 
 	pthread_cond_signal(sensor->requestReady);
 	pthread_cond_wait(sensor->resultReady, sensor->sensorAvailable);
@@ -341,17 +341,20 @@ void * UpdateWebServer ( void * params )
 
 		buildTimeStamp(sArgs->timeArray, timestamp);
 		
-		snprintf(buf, 1024, "http://%s:%d/update?id=%d&password=%s&name=%s&data=%d&status=%c&timestamp=%s",
-			hostname,
-			port,
-			id,
-			password,
-			name,
-			adcval,
-			status,
-            timestamp);
+		if (adcval >= 0)
+		{
+			snprintf(buf, 1024, "http://%s:%d/update?id=%d&password=%s&name=%s&data=%d&status=%c&timestamp=%s",
+				hostname,
+				port,
+				id,
+				password,
+				name,
+				adcval,
+				status,
+	            timestamp);
 
-		HTTP_GET(buf);
+			HTTP_GET(buf);
+		}
 
 		usleep(1000*500);
 
@@ -526,10 +529,13 @@ int main (void)
 
 		saveCursor();
 
+
+
 		switch (cmd)
 		{
 			case 'L':
 			{
+				
 				pthread_mutex_lock(&sensorLock);
 
 				sensorCmd = cmd;
@@ -646,11 +652,11 @@ int main (void)
 					adcValue |= (msgIn[2-i].data << (i * DATA_PATH_SIZE));
 					gotoXY(MSG_X,MSG_Y);
 					clearLine(MSG_Y);
-					printf("Message Received: %X", msgIn[0].data);
+					printf("Message Received: %X", msgIn[2-i].data);
 				}
 
 
-				if (msgIn[0].data == 0xE)
+				if (msgIn[3].data == 0xE)
 				{
 					adcValue &= 0x3FF;
 					voltage = (float) ((adcValue/1024.0) * 5.0); 
