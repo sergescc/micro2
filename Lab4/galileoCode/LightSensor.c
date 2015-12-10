@@ -170,11 +170,14 @@ float getVoltage(s_Args * sensor)
 		clearLine(STATUS_Y);
 		setColor(RESET);
 		printf("[\033[0;31m Error \033[m]\t Message Acknowledgment Failed \033[u");
-		
+		pthread_mutex_unlock(sensor->sensorAvailable);
+		pthread_mutex_unlock(sensor->sensorLock);
+		return (-1);
 	}
 
 	pthread_mutex_unlock(sensor->sensorAvailable);
 	pthread_mutex_unlock(sensor->sensorLock);
+	
 
 	return (voltage);
 
@@ -360,6 +363,8 @@ void * SensorThread ( void * params )
 	int i;
 	s_Args * sensor =  params;
 
+	pthread_mutex_lock(sensor->sensorAvailable);
+
 	while (1)
 	{
 		pthread_cond_wait(sensor->requestReady, sensor->sensorAvailable);
@@ -412,7 +417,6 @@ void * SensorThread ( void * params )
 		buildTimeStamp(sensor->timeArray, sensor->timestamp);
 
 		pthread_cond_signal(sensor->resultReady);
-		pthread_mutex_unlock(sensor->sensorAvailable);
 
 	}
 
@@ -505,7 +509,9 @@ int main (void)
 
 	clearPAGE();
 
+
 	pthread_create(&sensorThread, NULL, &SensorThread, &sensorData );
+
 	pthread_create(&webUpdateThread, NULL, &UpdateWebServer, &webData);
 	
 	while (1)
