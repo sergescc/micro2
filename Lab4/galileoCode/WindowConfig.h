@@ -29,5 +29,8 @@
 #define STATUS_X (6)
 #define STATUS_Y (20) 
 
+#define URLX (0)
+#define URLY (32)
+
 
 #endif

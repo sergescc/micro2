@@ -250,7 +250,7 @@ void unexport(int gpio)
     fileHandle = open("/sys/class/gpio/unexport", O_WRONLY);
     if(ERROR == fileHandle)
     {
-      printf("[\033[0;31m Error \033[m]\t Unable to open: %s \n", buffer);
+      printf("[\033[0;31m Error \033[m]\t Unable to open: unexport \n");
         exit(-1);
     }
     sprintf(buffer, "%d",gpio);

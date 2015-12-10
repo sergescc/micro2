@@ -27,9 +27,8 @@
 #define bool int
 #define true (1)
 #define false (0)
-
+//#define DEBUG
 //Global Variables used for graphing
-bool continueGraphing;		// Exit or Continue to Graph
 // Mutecx lock for continueGraphing variable
 
 
@@ -47,6 +46,8 @@ struct sensorArgs
 	int clkFile;
 	char * timestamp;
 	unsigned char * timeArray;
+	bool * running;
+	pthread_mutex_t * rLock;
 
 };
 
@@ -139,13 +140,14 @@ void clearInputBuffer()
 		float voltage: voltage rad by module
 */
 
-float getVoltage(s_Args * sensor)
+float getVoltage(s_Args * sensor, int * adcval)
 {
 	int i;
 	int adcValue = 0;
 	float voltage = 0;
 
 	pthread_mutex_lock(sensor->sensorLock);
+	pthread_mutex_lock(sensor->sensorAvailable);
 
 	(*sensor->cmd) = 'G';
 
@@ -162,19 +164,22 @@ float getVoltage(s_Args * sensor)
 	{
 		adcValue &= 0x3FF;
 		voltage = (float) ((adcValue/1024.0) * 5.0);
-
+		(*adcval) = adcValue;	
 	}
 	else
 	{
 		gotoXY(STATUS_X,STATUS_Y);
 		clearLine(STATUS_Y);
 		setColor(RESET);
+		#ifdef DEBUG
+		printf("ERROR in line 174\n");
+		#else
 		printf("[\033[0;31m Error \033[m]\t Message Acknowledgment Failed \033[u");
+		#endif
 		pthread_mutex_unlock(sensor->sensorAvailable);
 		pthread_mutex_unlock(sensor->sensorLock);
 		return (-1);
 	}
-
 	pthread_mutex_unlock(sensor->sensorAvailable);
 	pthread_mutex_unlock(sensor->sensorLock);
 	
@@ -209,6 +214,7 @@ void * graphVoltage(void * param)
 	float marker;
 	float min;
 	float max;
+	int adcVal;
 
 	bool continueGraph;
 
@@ -220,6 +226,7 @@ void * graphVoltage(void * param)
 	for (i = GRAPH_START_Y ; i <= GRAPH_END_Y; i++)
 	{
 		gotoXY(x,i);
+
 		if (((i - GRAPH_START_Y) % segmentBinSize) == 0)
 		{
 			printf("%d-|", markerValue--);
@@ -259,7 +266,7 @@ void * graphVoltage(void * param)
 		
 
 		 
-		voltage = getVoltage(g_Args->sArgs);
+		voltage = getVoltage(g_Args->sArgs, &adcVal);
 		
 
 		gotoXY((GRAPH_END_X - 20),(GRAPH_END_Y + 2) );
@@ -309,7 +316,10 @@ void HTTP_GET(const char* url){
 	curl = curl_easy_init();
 	if(curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url);
+		saveCursor();
+		gotoXY(URLX,URLY); 
 		curl_easy_perform(curl);
+		recallCursor();
 		curl_easy_cleanup(curl);
 	}
 }
@@ -321,27 +331,34 @@ void * UpdateWebServer ( void * params )
 
 	w_Args * wArgs = params;
 	s_Args * sArgs = wArgs->sArgs;
+	
+	bool continueR;
 
 	const char* hostname="localhost";
 	const int   port=8000;
 	const int   id=14;
 	const char* password="oranges";
 	const char* name="I+am+A+Banana";
+	float voltage;
 	int  adcval;
 	char status;
 	char buf[1024];
 
 	char timestamp[TIME_STAMP_LENGTH];
+	
+	pthread_mutex_lock(sArgs->rLock);
+	continueR = (*sArgs->running);
+	pthread_mutex_unlock(sArgs->rLock);
 
-	while (1) 
-	{
+	while (continueR)
+	{	
 		status = *(wArgs->userCmd);
 
-		adcval = getVoltage(sArgs);
+		voltage = getVoltage(sArgs, &adcval);
 
 		buildTimeStamp(sArgs->timeArray, timestamp);
 		
-		if (adcval >= 0)
+		if (voltage >= 0)
 		{
 			snprintf(buf, 1024, "http://%s:%d/update?id=%d&password=%s&name=%s&data=%d&status=%c&timestamp=%s",
 				hostname,
@@ -352,25 +369,37 @@ void * UpdateWebServer ( void * params )
 				adcval,
 				status,
 	            timestamp);
-
+						
 			HTTP_GET(buf);
+
 		}
 
-		usleep(1000*500);
+		usleep(1000*5000);
+		pthread_mutex_lock(sArgs->rLock);                                                               
+        	continueR = (*sArgs->running);                                                                   
+        	pthread_mutex_unlock(sArgs->rLock);  
+	}
 
-	}	
+	pthread_exit(0);	
 }
 
 void * SensorThread ( void * params )
 {
 	int i;
 	s_Args * sensor =  params;
+	bool continueR;
 
 	pthread_mutex_lock(sensor->sensorAvailable);
+	
 
-	while (1)
+	while (continueR)
 	{
+
 		pthread_cond_wait(sensor->requestReady, sensor->sensorAvailable);
+
+		pthread_mutex_lock(sensor->rLock);                                                      
+                continueR = (*sensor->running);                                                         
+                pthread_mutex_unlock(sensor->rLock);
 
 		switch (*sensor->cmd)
 		{
@@ -399,7 +428,7 @@ void * SensorThread ( void * params )
 			{
 				sensor->msgOut->data = 0x2;
 				sendMessage(*sensor->msgOut, sensor->dataPath);
-				for ( i = 0; i < 4; i ++)
+				for ( i = 0; i < 4; i++)
 				{
 					sensor->msgIn[i] = receiveMessage(sensor->dataPath);
 				}
@@ -421,8 +450,9 @@ void * SensorThread ( void * params )
 
 		pthread_cond_signal(sensor->resultReady);
 
-	}
 
+	}
+	pthread_exit(0);
 }
 
 /* Function: main
@@ -444,7 +474,7 @@ int main (void)
 	char timestamp[TIME_STAMP_LENGTH];
 
 	bool continueGraphing;
-
+	bool running;
 	int i;
 	int strobeHandle;
 	int i2cHandle;
@@ -462,13 +492,14 @@ int main (void)
 	pthread_mutex_t sensorLock;
 	pthread_mutex_t sensorAvailable;
 	pthread_mutex_t cGmutex;
-
+	pthread_mutex_t rLock;
 
 	pthread_cond_init  (&resultReady, NULL);
 	pthread_cond_init  (&requestReady, NULL);
 	pthread_mutex_init (&cGmutex, NULL);
 	pthread_mutex_init (&sensorLock, NULL);
 	pthread_mutex_init (&sensorAvailable, NULL);
+	pthread_mutex_init (&rLock, NULL);
 
 	unsigned char timeArray[CLOCK_VECTOR_SIZE];
 
@@ -490,6 +521,9 @@ int main (void)
 	sensorData.timestamp = timestamp;
 	sensorData.clkFile = clockFile;
 	sensorData.timeArray = timeArray;
+	sensorData.running = &running;                                                                     
+        sensorData.rLock   = &rLock;
+	
 
 	graphData.sArgs = &sensorData;
 	graphData.cGmutex = &cGmutex;
@@ -511,25 +545,29 @@ int main (void)
 	close(i2cHandle);
 
 	clearPAGE();
+	running = true;
 
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 	pthread_create(&sensorThread, NULL, &SensorThread, &sensorData );
-
+	usleep(1000 * 1000);
 	pthread_create(&webUpdateThread, NULL, &UpdateWebServer, &webData);
 	
 	while (1)
 	{
+
+		
 		printMenu();
-
+		
+		saveCursor();
+		
 		cmd = getchar();
-
+		
 		clearInputBuffer();
 
 		clearBelowLine(MSG_Y);
-
-		saveCursor();
-
-
+		
+		recallCursor();		
 
 		switch (cmd)
 		{
@@ -537,7 +575,7 @@ int main (void)
 			{
 				
 				pthread_mutex_lock(&sensorLock);
-
+				pthread_mutex_lock(&sensorAvailable);
 				sensorCmd = cmd;
 
 				pthread_cond_signal(&requestReady);
@@ -573,6 +611,7 @@ int main (void)
 			case 'P' :
 			{
 				pthread_mutex_lock(&sensorLock);
+				pthread_mutex_lock(&sensorAvailable);
 
 				sensorCmd = cmd;
 
@@ -606,7 +645,7 @@ int main (void)
 			{
 			
 				pthread_mutex_lock(&sensorLock);
-
+				 pthread_mutex_lock(&sensorAvailable);
 				sensorCmd = cmd;
 
 				pthread_cond_signal(&requestReady);
@@ -638,7 +677,7 @@ int main (void)
 			case 'G' :
 			{	
 				pthread_mutex_lock(&sensorLock);
-
+				pthread_mutex_lock(&sensorAvailable);
 				sensorCmd = cmd;
 
 				pthread_cond_signal(&requestReady);
@@ -689,7 +728,7 @@ int main (void)
 			{	
 				
 				pthread_mutex_lock(&sensorLock);
-
+				 pthread_mutex_lock(&sensorAvailable);
 				sensorCmd = cmd;
 
 				pthread_cond_signal(&requestReady);
@@ -792,11 +831,21 @@ int main (void)
 			{
 				gotoXY(MSG_X,MSG_Y);
 				clearLine(MSG_Y);
+				pthread_mutex_lock(&rLock);
+				running = false;
+				pthread_mutex_unlock(&rLock);
+				pthread_join(webUpdateThread,NULL);
+				pthread_mutex_lock(&sensorAvailable);
+				pthread_cond_signal(&requestReady);
+				pthread_mutex_unlock(&sensorAvailable);
+                               
+                                pthread_join(sensorThread, NULL); 
+				unexport(Strobe);                                                       
+                                unexportArray(dataPath, DATA_PATH_SIZE); 
+ 
 				printf("[\033[0;32m OK \033[m]\t ThankYou For UsingLightSensor");
-				unexport(Strobe);
-				unexportArray(dataPath, DATA_PATH_SIZE);
 				printf("\033[2J\033[0;0H\033[m");
-				pthread_mutex_unlock(&sensorLock);
+
 				exit(0);
 			}
 

@@ -13,7 +13,7 @@
 
 #include "CursorCntl.h"
 
-#define DEBUG
+//#define DEBUG
 
 //Set Color
 
@@ -93,9 +93,12 @@ void saveCursor()
 // clears from the current position to the end of the line
 
 void clearEOL()
-
 {
+	#ifdef DEBUG
+	printf("\n");
+	#else
 	printf ("\033[K");
+	#endif
 }
 
 //clears the entire page
