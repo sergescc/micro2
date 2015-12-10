@@ -334,10 +334,7 @@ void * UpdateWebServer ( void * params )
 
 	while (1) 
 	{
-
-		pthread_mutex_lock(sArgs->sensorLock);
 		status = *(wArgs->userCmd);
-		pthread_mutex_unlock(sArgs->sensorLock);
 
 		adcval = getVoltage(sArgs);
 		buildTimeStamp(sArgs->timeArray, timestamp);
@@ -416,8 +413,6 @@ void * SensorThread ( void * params )
 		buildTimeStamp(sensor->timeArray, sensor->timestamp);
 
 		pthread_cond_signal(sensor->resultReady);
-
-		pthread_mutex_unlock(sensor->sensorAvailable);
 
 	}
 
